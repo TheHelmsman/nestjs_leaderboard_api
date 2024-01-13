@@ -74,7 +74,7 @@ export class UsersController {
     @Query('sortBy') sortBy: string,
     @Query('sortDir') sortDir: string,
   ) {
-    console.log(sortBy, sortDir); // TODO - take into account sorting options
+    console.log('sortBy: ', sortBy, 'sortDir: ', sortDir); // TODO - take into account sorting options
     const leaderboard = await this.userService.fetchLeaderboard();
     const sortedOutput = leaderboard.sort((a, b) => a.score - b.score);
     return sortedOutput.slice(0, 9);
