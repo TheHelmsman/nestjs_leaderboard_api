@@ -6,12 +6,15 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from '../../dtos/CreateUser.dto';
 import { UpdateUserDto } from 'src/users/dtos/UpdateUser.dto';
 import { UsersService } from 'src/users/services/users/users.service';
 import { CreateUserScoreDto } from 'src/users/dtos/CreateUserScore.dto';
+import { AuthGuard } from '../../guards/auth/auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -56,7 +59,8 @@ export class UsersController {
   //  -H "Content-Type: application/json"
   //  -d '{ "score": 10000, "playerName": "Paul" }'
   @Post(':id/scores')
-  createUserPost(
+  @UseGuards(AuthGuard)
+  createUserScore(
     @Param('id', ParseIntPipe) id: number,
     @Body() createUserPostDto: CreateUserScoreDto,
   ) {
@@ -66,7 +70,11 @@ export class UsersController {
   //  Execute following in terminal window to check endpoint:
   //  curl -X GET http://localhost:3001/users
   @Get('/leaderboard')
-  async getLeaderboard() {
+  async getLeaderboard(
+    @Query('sortBy') sortBy: string,
+    @Query('sortDir') sortDir: string,
+  ) {
+    console.log(sortBy, sortDir); // TODO - take into account sorting options
     const leaderboard = await this.userService.fetchLeaderboard();
     const sortedOutput = leaderboard.sort((a, b) => a.score - b.score);
     return sortedOutput.slice(0, 9);
